@@ -1,0 +1,166 @@
+<x-app-layout>
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            Consultas
+        </h2>
+    </x-slot>
+
+    <div class="py-12">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
+                <div class="p-5 lg:p-5 bg-white border-b border-gray-200">
+                    <div class="flex items-center">
+
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="size-5 text-vino-900">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 104.5 4.5a7.5 7.5 0 0012.15 12.15z" />
+                        </svg>
+
+
+                        <h2 class="ms-3 text-xl font-semibold text-gray-900">
+                            {{ now()->format('d/m/Y') }}
+                        </h2>
+                    </div>
+                    <h1 class="mt-8 text-2xl font-medium text-gray-900">
+                        Datos para la consulta
+                    </h1>
+
+                </div>
+
+                <div class="bg-gray-200 bg-opacity-25 overflow-hidden sm:rounded-lg p-5">
+
+                    <form method="GET" action="{{ route('registro.consulta') }}">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {{-- Columna izquierda --}}
+                            <div class="space-y-4">
+
+                                <div class="mt-4">
+                                    <x-label for="fecha_inicial" value="Fecha inicial" />
+                                    <x-input id="fecha_inicial"
+                                        class="w-full border-vino-900 focus:border-vino-900 focus:ring-vino-900"
+                                        type="date" name="fecha_inicial" required autofocus tabindex="1" />
+                                </div>
+
+                                <div class="mt-4">
+                                    <x-label for="dependencia_id" value="Dependencia" />
+                                    <select id="dependencia_id" name="dependencia_id"
+                                        class="w-full border-vino-900 focus:border-vino-900 focus:ring-vino-900 rounded-md shadow-sm"
+                                        tabindex="3">
+                                        <option value="" selected>Todas</option>
+                                        @foreach ($dependencias as $dependencia)
+                                            <option value="{{ $dependencia->id }}">{{ $dependencia->nombre }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="mt-4">
+                                    <x-label for="tipo_visita_id" value="Tipo de visita" />
+                                    <select id="tipo_visita_id" name="tipo_visita_id"
+                                        class="w-full border-vino-900 focus:border-vino-900 focus:ring-vino-900 rounded-md shadow-sm"
+                                        tabindex="5">
+                                        <option value="" selected>Todos</option>
+                                        @foreach ($tipoVisitas as $tipoVisita)
+                                            <option value="{{ $tipoVisita->id }}">{{ $tipoVisita->nombre }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+
+                            </div>
+
+                            {{-- Columna derecha --}}
+                            <div class="space-y-4">
+                                <div class="mt-4">
+                                    <x-label for="fecha_final" value="Fecha final" />
+                                    <x-input id="fecha_final"
+                                        class="w-full border-vino-900 focus:border-vino-900 focus:ring-vino-900"
+                                        type="date" name="fecha_final" tabindex="1" required autofocus />
+                                </div>
+
+                                <div class="mt-4">
+                                    <x-label for="municipio_id" value="Municipio" />
+                                    <select id="municipio_id" name="municipio_id"
+                                        class="w-full border-vino-900 focus:border-vino-900 focus:ring-vino-900 rounded-md shadow-sm"
+                                        tabindex="4">
+                                        <option value="" selected>Todos</option>
+                                        @foreach ($municipios as $municipio)
+                                            <option value="{{ $municipio->id }}">{{ $municipio->nombre }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <button type="submit" class="mt-4 bg-vino-900 text-white py-2 px-4 rounded-md"
+                                    tabindex="6">Consultar</button>
+                            </div>
+                        </div>
+
+
+                    </form>
+                </div>
+
+                <div class="bg-gray-200 bg-opacity-25 overflow-hidden sm:rounded-lg p-5">
+                    <table id="tabla-consultas" class="min-w-full mt-6">
+                        <thead>
+                            <tr class="text-left">
+                                <th class="py-2">Fecha</th>
+                                <th class="py-2">Nombre</th>
+                                <th class="py-2">Dependencia</th>
+                                <th class="py-2">Tipo de visita</th>
+                                <th class="py-2">Municipio</th>
+                                <th class="py-2">Evento</th>
+                                <th class="py-2">Registró</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($registros as $r)
+                                <tr class="border-t">
+                                    <td class="py-2">{{ $r->created_at?->format('d/m/Y H:i') }}</td>
+                                    <td class="py-2">{{ $r->nombre }}</td>
+                                    <td class="py-2">{{ $r->dependencia->nombre ?? '—' }}</td>
+                                    <td class="py-2">{{ $r->tipoVisita->nombre ?? '—' }}</td>
+                                    <td class="py-2">{{ $r->municipio->nombre ?? '—' }}</td>
+                                    <td class="py-2"> @php
+                                        if ($r->para_evento == 0) {
+                                            $texto = '—';
+                                        } elseif ($r->num_personas > 0) {
+                                            $texto = 'Sí (' . $r->num_personas . ' acomp.)';
+                                        } else {
+                                            $texto = 'Sí';
+                                        }
+                                    @endphp
+
+                                        {{ $texto }}</td>
+                                    <td class="py-2">{{ $r->user->name ?? '—' }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        {{-- DataTables (CDN) --}}
+        @push('styles')
+            <link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/jquery.dataTables.min.css">
+        @endpush
+
+        @push('scripts')
+            <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+            <script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    const hoy = new Date().toISOString().split('T')[0];
+                    document.getElementById('fecha_inicial').value = hoy;
+                    document.getElementById('fecha_final').value = hoy;
+                });
+
+                $(function() {
+                    $('#tabla-consultas').DataTable({
+                        responsive: true,
+                        pageLength: 10,
+                        language: {
+                            url: 'https://cdn.datatables.net/plug-ins/1.13.8/i18n/es-MX.json'
+                        }
+                    });
+                });
+            </script>
+        @endpush
+
+</x-app-layout>
