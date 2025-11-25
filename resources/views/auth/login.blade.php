@@ -19,8 +19,8 @@
             @csrf
 
             <div>
-                <x-label for="email" value="{{ __('Email') }}" />
-                <x-input id="email" class="block mt-1 w-full border-vino-900 focus:border-vino-900 focus:ring-vino-900" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
+                <x-label for="email" value="{{ __('Usuario') }}" />
+                <x-input id="email" class="block mt-1 w-full border-vino-900 focus:border-vino-900 focus:ring-vino-900" type="text" name="email" :value="old('email')" required autofocus autocomplete="username" />
             </div>
 
             <div class="mt-4">

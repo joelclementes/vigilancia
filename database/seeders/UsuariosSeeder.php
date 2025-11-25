@@ -21,8 +21,23 @@ class UsuariosSeeder extends Seeder
             ],
             [
                 'name' => 'Lorena Rivera Ruiz',
-                'email' => 'lorenarr@prueba.com',
-                'password' => bcrypt('123456789'),
+                'email' => 'lrivera',
+                'password' => bcrypt('lrivera'),
+            ],
+            [
+                'name' => 'Jesús Iván Fernández Álvarez',
+                'email' => 'jfernandez',
+                'password' => bcrypt('jfernandez'),
+            ],
+            [
+                'name' => 'María del Pilar Cobos Barajas',
+                'email' => 'mcobos',
+                'password' => bcrypt('mcobos'),
+            ],
+            [
+                'name' => 'Isaí Saldaña Rivera',
+                'email' => 'isaldaña',
+                'password' => bcrypt('isaldaña'),
             ],
         ];
 
