@@ -17,6 +17,7 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use Filament\Navigation\NavigationItem;
 
 class AdministradorPanelProvider extends PanelProvider
 {
@@ -29,6 +30,12 @@ class AdministradorPanelProvider extends PanelProvider
             ->login()
             ->colors([
                 'primary' => Color::Amber,
+            ])
+            ->navigationItems([
+                NavigationItem::make('Volver al sistema')
+                    ->url('/') // Ruta raíz
+                    ->icon('heroicon-o-arrow-left-start-on-rectangle')
+                    ->sort(-1),
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
@@ -53,6 +60,7 @@ class AdministradorPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
-            ]);
+            ])
+        ;
     }
 }
