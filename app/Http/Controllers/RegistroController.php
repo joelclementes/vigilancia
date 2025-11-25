@@ -10,6 +10,9 @@ use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 
+use App\Exports\RegistrosExport;
+use Maatwebsite\Excel\Facades\Excel;
+
 class RegistroController extends Controller
 {
     /**
@@ -131,4 +134,38 @@ class RegistroController extends Controller
     {
         //
     }
+
+    public function exportExcel(Request $request)
+{
+    /** Repetimos la misma consulta que index(), pero obteniendo colección */
+    $query = Registro::with(['dependencia', 'tipoVisita', 'municipio', 'user']);
+
+    if ($request->filled('municipio_id')) {
+        $query->where('municipio_id', $request->municipio_id);
+    }
+    if ($request->filled('dependencia_id')) {
+        $query->where('dependencia_id', $request->dependencia_id);
+    }
+    if ($request->filled('tipo_visita_id')) {
+        $query->where('tipo_visita_id', $request->tipo_visita_id);
+    }
+    if ($request->filled('fecha_inicial') || $request->filled('fecha_final')) {
+        $inicio = $request->filled('fecha_inicial')
+            ? \Carbon\Carbon::parse($request->fecha_inicial)->startOfDay()
+            : \Carbon\Carbon::minValue();
+
+        $fin = $request->filled('fecha_final')
+            ? \Carbon\Carbon::parse($request->fecha_final)->endOfDay()
+            : \Carbon\Carbon::now()->endOfDay();
+
+        $query->whereBetween('created_at', [$inicio, $fin]);
+    }
+
+    $registros = $query->get(); // colección
+
+    return Excel::download(
+        new RegistrosExport($registros),
+        'consultas.xlsx'
+    );
+}
 }

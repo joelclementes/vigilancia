@@ -96,7 +96,23 @@
                     </form>
                 </div>
 
+                
+                
                 <div class="bg-gray-200 bg-opacity-25 overflow-hidden sm:rounded-lg p-5">
+                    <div class="flex justify-end mb-4">
+                        <a href="{{ route('registro.export', request()->query()) }}"
+                            class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md flex items-center">
+    
+                            {{-- Ícono Excel --}}
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 24 24"
+                                fill="currentColor">
+                                <path
+                                    d="M19 2H8C6.895 2 6 2.895 6 4V6H4C2.895 6 2 6.895 2 8V20C2 21.105 2.895 22 4 22H16C17.105 22 18 21.105 18 20V18H19C20.105 18 21 17.105 21 16V4C21 2.895 20.105 2 19 2ZM16 20H4V8H16V20ZM19 16H18V6H8V4H19V16Z" />
+                            </svg>
+    
+                            Exportar Excel
+                        </a>
+                    </div>
                     <table id="tabla-consultas" class="min-w-full mt-6">
                         <thead>
                             <tr class="text-left">
