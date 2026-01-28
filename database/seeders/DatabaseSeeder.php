@@ -21,6 +21,8 @@ class DatabaseSeeder extends Seeder
             CloneMunicipiosSeeder::class,
             DependenciasSeeder::class,
             TipoVisitasSeeder::class,
+            CloneAreasSeeder::class,
+            CloneDiputadosSeeder::class,
         ]);
     }
 }

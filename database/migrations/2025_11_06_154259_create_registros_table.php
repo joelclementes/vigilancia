@@ -16,12 +16,16 @@ return new class extends Migration
             $table->tinyInteger('para_evento')->default(0);
             $table->integer('num_personas')->default(0);
             $table->string('nombre');
+            $table->string('apellido_paterno')->nullable();
+            $table->string('apellido_materno')->nullable();
             $table->string('a_quien_visita')->nullable();
             $table->string('asunto')->nullable();
             $table->unsignedBigInteger('dependencia_id')->nullable();
             $table->unsignedBigInteger('tipo_visita_id');
             $table->unsignedBigInteger('municipio_id')->nullable();
-            $table->unsignedBigInteger('gafet')->nullable();
+            $table->string('gafet')->nullable();
+            $table->unsignedBigInteger('area_id')->nullable();
+            $table->unsignedBigInteger('diputado_id')->nullable();
             $table->unsignedBigInteger('user_id');
             $table->timestamps();
 

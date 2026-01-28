@@ -55,11 +55,26 @@
                                     </div>
                                 </div>
 
-                                <div class="mt-4">
-                                    <x-label for="nombre" value="Nombre" />
-                                    <x-input id="nombre"
-                                        class="w-full border-vino-900 focus:border-vino-900 focus:ring-vino-900"
-                                        type="text" name="nombre" required autofocus />
+                                <div class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <div>
+                                        <x-label class="text-red-600" for="nombre" value="Nombre(s) *" />
+                                        <x-input id="nombre"
+                                            class="w-full border-vino-900 focus:border-vino-900 focus:ring-vino-900"
+                                            type="text" name="nombre" required autofocus />
+                                    </div>
+                                    <div>
+                                        <x-label for="apellido_paterno" value="Ap. Paterno" />
+                                        <x-input id="apellido_paterno"
+                                            class="w-full border-vino-900 focus:border-vino-900 focus:ring-vino-900"
+                                            type="text" name="apellido_paterno" autofocus />
+                                    </div>
+
+                                    <div>
+                                        <x-label for="apellido_materno" value="Ap. Materno" />
+                                        <x-input id="apellido_materno"
+                                            class="w-full border-vino-900 focus:border-vino-900 focus:ring-vino-900"
+                                            type="text" name="apellido_materno" autofocus />
+                                    </div>
                                 </div>
                                 <div class="mt-4">
                                     <x-label for="a_quien_visita" value="A quien visita" />
@@ -69,7 +84,8 @@
                                 </div>
 
                                 <div class="mt-4">
-                                    <x-label for="asunto" value="Asunto/Descripción/Comentarios" />
+                                    <x-label class="text-red-600" for="asunto"
+                                        value="Asunto/Descripción/Comentarios *" />
                                     <textarea id="asunto" name="asunto" rows="4"
                                         class="w-full border-vino-900 focus:border-vino-900 focus:ring-vino-900 rounded-md shadow-sm" required></textarea>
                                 </div>
@@ -77,18 +93,35 @@
 
                             {{-- Columna derecha --}}
                             <div class="space-y-4">
-                                <div class="mt-4">
-                                    <x-label for="dependencia_id" value="Dependencia" />
-                                    <select id="dependencia_id" name="dependencia_id"
-                                        class="w-full border-vino-900 focus:border-vino-900 focus:ring-vino-900 rounded-md shadow-sm">
-                                        <option value="" disabled selected>Seleccione una dependencia</option>
-                                        @foreach ($dependencias as $dependencia)
-                                            <option value="{{ $dependencia->id }}">{{ $dependencia->nombre }}</option>
-                                        @endforeach
-                                    </select>
+
+                                <div class="flex space-x-4">
+                                    <div class="mt-4">
+                                        <x-label for="municipio_id" value="Municipio" />
+                                        <select id="municipio_id" name="municipio_id"
+                                            class="w-full border-vino-900 focus:border-vino-900 focus:ring-vino-900 rounded-md shadow-sm">
+                                            <option value="" disabled selected>Seleccione un municipio</option>
+                                            @foreach ($municipios as $municipio)
+                                                <option value="{{ $municipio->id }}">{{ $municipio->nombre }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+
+                                    <div class="mt-4">
+                                        <x-label for="dependencia_id" value="Dependencia" />
+                                        <select id="dependencia_id" name="dependencia_id"
+                                            class="w-full border-vino-900 focus:border-vino-900 focus:ring-vino-900 rounded-md shadow-sm">
+                                            <option value="" disabled selected>Seleccione una dependencia</option>
+                                            @foreach ($dependencias as $dependencia)
+                                                <option value="{{ $dependencia->id }}">{{ $dependencia->nombre }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
                                 </div>
+
+
                                 <div class="mt-4">
-                                    <x-label for="tipo_visita_id" value="Tipo de visita" />
+                                    <x-label class="text-red-600" for="tipo_visita_id" value="Tipo de visita *" />
                                     <select id="tipo_visita_id" name="tipo_visita_id"
                                         class="w-full border-vino-900 focus:border-vino-900 focus:ring-vino-900 rounded-md shadow-sm"
                                         required>
@@ -100,15 +133,52 @@
                                 </div>
 
                                 <div class="mt-4">
-                                    <x-label for="municipio_id" value="Municipio" />
-                                    <select id="municipio_id" name="municipio_id"
+                                    <x-label for="area_visita" value="Área de visita" />
+                                    <div class="flex gap-6 mt-2">
+                                        <!-- Radio button para Administrativa -->
+                                        <label class="inline-flex items-center">
+                                            <input type="radio" id="area_administrativa" name="area_visita"
+                                                value="Administrativa"
+                                                class="border-vino-900 text-vino-900 focus:border-vino-900 focus:ring-vino-900"
+                                                autofocus />
+                                            <span class="ml-2 text-gray-700">Administrativa</span>
+                                        </label>
+
+                                        <!-- Radio button para Diputados -->
+                                        <label class="inline-flex items-center">
+                                            <input type="radio" id="area_diputados" name="area_visita"
+                                                value="Diputados"
+                                                class="border-vino-900 text-vino-900 focus:border-vino-900 focus:ring-vino-900" />
+                                            <span class="ml-2 text-gray-700">Diputados</span>
+                                        </label>
+                                    </div>
+                                </div>
+
+
+                                <div class="mt-4">
+                                    <x-label for="area_id" value="Área" />
+                                    <select id="area_id" name="area_id"
                                         class="w-full border-vino-900 focus:border-vino-900 focus:ring-vino-900 rounded-md shadow-sm">
-                                        <option value="" disabled selected>Seleccione un municipio</option>
-                                        @foreach ($municipios as $municipio)
-                                            <option value="{{ $municipio->id }}">{{ $municipio->nombre }}</option>
+                                        <option value="" disabled selected>Seleccione Área</option>
+                                        @foreach ($areas as $area)
+                                            <option value="{{ $area->id }}">{{ $area->nombre }}</option>
                                         @endforeach
                                     </select>
                                 </div>
+
+                                <div class="mt-4">
+                                    <x-label for="diputado_id" value="Diputado" />
+                                    <select id="diputado_id" name="diputado_id"
+                                        class="w-full border-vino-900 focus:border-vino-900 focus:ring-vino-900 rounded-md shadow-sm">
+                                        <option value="" disabled selected>Seleccione Diputado (en su caso)
+                                        </option>
+                                        @foreach ($diputados as $diputado)
+                                            <option value="{{ $diputado->id }}">{{ $diputado->nombre }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+
+
 
                                 <div class="mt-4">
                                     <x-label for="gafet" value="Gafet" />
@@ -127,5 +197,48 @@
                 </div>
             </div>
         </div>
+
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                // Elementos del DOM
+                const areaAdministrativa = document.getElementById('area_administrativa');
+                const areaDiputados = document.getElementById('area_diputados');
+                const areaIdSelect = document.getElementById('area_id').closest('.mt-4');
+                const diputadoIdSelect = document.getElementById('diputado_id').closest('.mt-4');
+
+                // Ocultar ambos selectores inicialmente
+                areaIdSelect.style.display = 'none';
+                diputadoIdSelect.style.display = 'none';
+
+                // Función para mostrar/ocultar selectores
+                function toggleSelectors() {
+                    if (areaAdministrativa.checked) {
+                        areaIdSelect.style.display = 'block';
+                        diputadoIdSelect.style.display = 'none';
+                        // Hacer opcional el select de diputados
+                        document.getElementById('diputado_id').removeAttribute('required');
+                        document.getElementById('area_id').setAttribute('required', 'required');
+                    } else if (areaDiputados.checked) {
+                        areaIdSelect.style.display = 'none';
+                        diputadoIdSelect.style.display = 'block';
+                        // Hacer opcional el select de área
+                        document.getElementById('area_id').removeAttribute('required');
+                        document.getElementById('diputado_id').setAttribute('required', 'required');
+                    } else {
+                        // Ninguno seleccionado
+                        areaIdSelect.style.display = 'none';
+                        diputadoIdSelect.style.display = 'none';
+                    }
+                }
+
+                // Event listeners para los radio buttons
+                areaAdministrativa.addEventListener('change', toggleSelectors);
+                areaDiputados.addEventListener('change', toggleSelectors);
+
+                // Ejecutar al cargar la página por si hay valor predefinido
+                toggleSelectors();
+            });
+        </script>
 
 </x-app-layout>

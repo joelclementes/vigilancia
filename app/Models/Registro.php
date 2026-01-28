@@ -11,11 +11,15 @@ class Registro extends Model
         'para_evento',
         'num_personas',
         'nombre',
+        'apellido_paterno',
+        'apellido_materno',
         'a_quien_visita',
         'asunto',
         'dependencia_id',
         'tipo_visita_id',
         'municipio_id',
+        'area_id',
+        'diputado_id',
         'gafet',
         'user_id',
     ];
@@ -35,6 +39,16 @@ class Registro extends Model
     public function municipio()
     {
         return $this->belongsTo(Municipio::class);
+    }
+
+    public function area()
+    {
+        return $this->belongsTo(Area::class);
+    }
+
+    public function diputado()
+    {
+        return $this->belongsTo(Diputado::class);
     }
 
     // 🔹 Relación con Usuario (modelo User)

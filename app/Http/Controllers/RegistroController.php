@@ -11,6 +11,8 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 
 use App\Exports\RegistrosExport;
+use App\Models\Area;
+use App\Models\Diputado;
 use Maatwebsite\Excel\Facades\Excel;
 
 class RegistroController extends Controller
@@ -23,6 +25,8 @@ class RegistroController extends Controller
         $municipios   = Municipio::orderBy('nombre')->get();
         $dependencias = Dependencia::orderBy('nombre')->get();
         $tipoVisitas  = TiposVisita::orderBy('nombre')->get();
+        $areas = Area::orderBy('nombre')->get();
+        $diputados = Diputado::orderBy('nombre')->get();
 
         $registros = collect(); // vacío por defecto
 
@@ -41,11 +45,51 @@ class RegistroController extends Controller
             if ($request->filled('municipio_id'))   $query->where('municipio_id',   $request->municipio_id);
             if ($request->filled('dependencia_id')) $query->where('dependencia_id', $request->dependencia_id);
             if ($request->filled('tipo_visita_id')) $query->where('tipo_visita_id', $request->tipo_visita_id);
+            if ($request->filled('area_id')) $query->where('area_id', $request->area_id);
+            if ($request->filled('diputado_id')) $query->where('diputado_id', $request->diputado_id);
 
             $registros = $query->latest()->paginate(20)->withQueryString();
         }
 
-        return view('consulta', compact('municipios', 'dependencias', 'tipoVisitas', 'registros'));
+        if ($request->filled('nombre')) {
+            $request->validate([
+                'nombre' => 'nullable|string|max:255',
+            ]);
+
+            // if ($request->filled('nombre')) {
+            //     $query->where(function ($q) use ($request) {
+            //         $q->where('nombre', 'like', '%' . $request->nombre . '%')
+            //             ->orWhere('apellido_paterno', 'like', '%' . $request->nombre . '%')
+            //             ->orWhere('apellido_materno', 'like', '%' . $request->nombre . '%');
+            //     });
+            // }
+
+            if ($request->filled('nombre')) {
+                // Limpiar y dividir el término de búsqueda
+                $palabras = array_filter(
+                    preg_split('/\s+/', trim($request->nombre)),
+                    function ($palabra) {
+                        return strlen($palabra) > 1; // Ignorar palabras de 1 letra
+                    }
+                );
+
+                if (!empty($palabras)) {
+                    $query->where(function ($q) use ($palabras) {
+                        foreach ($palabras as $palabra) {
+                            $q->where(function ($innerQ) use ($palabra) {
+                                $innerQ->where('nombre', 'like', '%' . $palabra . '%')
+                                    ->orWhere('apellido_paterno', 'like', '%' . $palabra . '%')
+                                    ->orWhere('apellido_materno', 'like', '%' . $palabra . '%');
+                            });
+                        }
+                    });
+                }
+            }
+
+            $registros = $query->latest()->paginate(20)->withQueryString();
+        }
+
+        return view('consulta', compact('municipios', 'dependencias', 'tipoVisitas', 'registros', 'areas', 'diputados'));
     }
 
     /**
@@ -57,8 +101,10 @@ class RegistroController extends Controller
         $municipios = Municipio::orderBy('nombre')->get();
         $dependencias = Dependencia::orderBy('nombre')->get();
         $tipoVisitas = TiposVisita::orderBy('nombre')->get();
+        $areas = Area::orderBy('nombre')->get();
+        $diputados = Diputado::orderBy('nombre')->get();
 
-        return view('registro', compact('municipios', 'dependencias', 'tipoVisitas'));
+        return view('registro', compact('municipios', 'dependencias', 'tipoVisitas', 'areas', 'diputados'));
         //
     }
 
@@ -72,15 +118,19 @@ class RegistroController extends Controller
             'para_evento'     => 'nullable|boolean',
             'num_personas'    => 'nullable|integer|min:0|max:50',
             'nombre' => 'required|string|max:255',
+            'apellido_paterno' => 'nullable|string|max:255',
+            'apellido_materno' => 'nullable|string|max:255',
             'a_quien_visita' => 'nullable|string|max:255',
             'asunto' => 'nullable|string|max:255',
             'dependencia_id' => 'nullable|integer|exists:dependencias,id',
             'tipo_visita_id' => 'required|integer|exists:tipos_visita,id',
             'municipio_id' => 'nullable|integer|exists:municipios,id',
+            'area_id' => 'nullable|integer|exists:areas,id',
+            'diputado_id' => 'nullable|integer|exists:diputados,id',
             'gafet' => 'nullable|string|max:255',
         ]);
 
-        $paraEvento = $request->boolean('para_evento'); 
+        $paraEvento = $request->boolean('para_evento');
         $numPersonas = $paraEvento
             ? (int) $request->input('num_personas', 0)
             : 0;
@@ -91,8 +141,6 @@ class RegistroController extends Controller
         $validated['user_id'] = Auth::id();
 
         // Guardamos el registro
-        // Registro::create($validated);
-        
         try {
             Registro::create($validated);
         } catch (\Exception $e) {
@@ -136,36 +184,36 @@ class RegistroController extends Controller
     }
 
     public function exportExcel(Request $request)
-{
-    /** Repetimos la misma consulta que index(), pero obteniendo colección */
-    $query = Registro::with(['dependencia', 'tipoVisita', 'municipio', 'user']);
+    {
+        /** Repetimos la misma consulta que index(), pero obteniendo colección */
+        $query = Registro::with(['dependencia', 'tipoVisita', 'municipio', 'user']);
 
-    if ($request->filled('municipio_id')) {
-        $query->where('municipio_id', $request->municipio_id);
+        if ($request->filled('municipio_id')) {
+            $query->where('municipio_id', $request->municipio_id);
+        }
+        if ($request->filled('dependencia_id')) {
+            $query->where('dependencia_id', $request->dependencia_id);
+        }
+        if ($request->filled('tipo_visita_id')) {
+            $query->where('tipo_visita_id', $request->tipo_visita_id);
+        }
+        if ($request->filled('fecha_inicial') || $request->filled('fecha_final')) {
+            $inicio = $request->filled('fecha_inicial')
+                ? \Carbon\Carbon::parse($request->fecha_inicial)->startOfDay()
+                : \Carbon\Carbon::minValue();
+
+            $fin = $request->filled('fecha_final')
+                ? \Carbon\Carbon::parse($request->fecha_final)->endOfDay()
+                : \Carbon\Carbon::now()->endOfDay();
+
+            $query->whereBetween('created_at', [$inicio, $fin]);
+        }
+
+        $registros = $query->get(); // colección
+
+        return Excel::download(
+            new RegistrosExport($registros),
+            'consultas.xlsx'
+        );
     }
-    if ($request->filled('dependencia_id')) {
-        $query->where('dependencia_id', $request->dependencia_id);
-    }
-    if ($request->filled('tipo_visita_id')) {
-        $query->where('tipo_visita_id', $request->tipo_visita_id);
-    }
-    if ($request->filled('fecha_inicial') || $request->filled('fecha_final')) {
-        $inicio = $request->filled('fecha_inicial')
-            ? \Carbon\Carbon::parse($request->fecha_inicial)->startOfDay()
-            : \Carbon\Carbon::minValue();
-
-        $fin = $request->filled('fecha_final')
-            ? \Carbon\Carbon::parse($request->fecha_final)->endOfDay()
-            : \Carbon\Carbon::now()->endOfDay();
-
-        $query->whereBetween('created_at', [$inicio, $fin]);
-    }
-
-    $registros = $query->get(); // colección
-
-    return Excel::download(
-        new RegistrosExport($registros),
-        'consultas.xlsx'
-    );
-}
 }
