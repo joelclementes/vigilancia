@@ -2,7 +2,7 @@
     <img src="{{ env('APP_LOGO_LEGISLATURA') }}" alt="App" class="h-40 w-auto mx-auto block" />
 
     <h1 class="mt-8 text-2xl font-medium text-gray-900">
-        Bienvenido al sistema <span class="font-semibold text-vino-900">Vigilancia</span>.
+        Bienvenido al sistema <span class="font-semibold text-vino-900">Seguridad y Vigilancia</span>.
     </h1>
 
     <p class="text-gray-600 leading-relaxed">
